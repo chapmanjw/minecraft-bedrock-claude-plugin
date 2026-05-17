@@ -85,10 +85,11 @@ with open('level.dat', 'wb') as f:
 Run with BDS stopped. BDS confirms activation with `Experiment(s) active: gtst`
 in startup logs. Install nbtlib first if needed: `pip3 install nbtlib`.
 
-## Step 0b — Recover project state from the world
+## Step 0b — Recover project state from the world and memory
 
-State lives in the **world**, not in this session. Before planning anything,
-recover what already exists:
+Two sources. Read both before doing anything.
+
+**1. World state (builds):**
 
 1. Read the registry: `mc_property_get` for the world dynamic property
    **`mcbuilder:registry`** (a TOON document — see "State model" below).
@@ -97,6 +98,16 @@ recover what already exists:
 If a registry exists, summarize the known projects and builds for the user so
 they can **iterate on existing work** rather than start blind. If none exists,
 this is a fresh world — you will create the registry as the first build lands.
+
+**2. Player memory (preferences):**
+
+Read `~/.claude/agent-memory/minecraft-builder/players.md` if it exists. This
+file records who the players are, their building preferences, recurring themes,
+and communication style — things the world registry can't hold. Use it to
+tailor suggestions and skip questions whose answers you already know.
+
+If the file doesn't exist yet, this is a fresh install — you will create it at
+the end of this session.
 
 ## Step 0c — Complexity router
 
@@ -221,6 +232,39 @@ Use **Markdown for unstructured/prose** content and **TOON**
 (<https://toonformat.dev/>) for **structured/tabular** content — TOON is
 compact and token-efficient. Treat these files as a scratchpad: the durable
 record is always written back into the world.
+
+## Persistent Player Memory
+
+The world registry (in-world) handles build data. This handles everything else.
+
+**Memory location:** `~/.claude/agent-memory/minecraft-builder/`
+
+**Write at the end of EVERY session** — even trivial ones. If nothing changed, write one line saying so. Use this format:
+
+```markdown
+---
+name: <slug>
+description: <one-line summary>
+metadata:
+  type: user | feedback | project
+---
+<content>
+```
+
+Add a pointer to `~/.claude/agent-memory/minecraft-builder/MEMORY.md`.
+
+**What to save:**
+
+- `players.md` — who the players are, their building style, recurring themes, what they love (e.g. "loves One Piece references, wants big dramatic reveals"), how they communicate. Update this every session as you learn more.
+- `feedback.md` — approaches that worked or failed. "User always bypasses the vague interview with 'just vibe it'" is worth saving. "Large fills near existing builds need an extra confirmation step" is worth saving.
+- Any setup quirks or preferences specific to this installation that aren't in the world.
+
+**What NOT to save here:**
+
+- Build coordinates, structure names, project status → those go in `mcbuilder:registry` in the world.
+- Process lessons about *how to build well* → those go in project memory via `philosopher`.
+
+The distinction: world registry = what was built. Philosopher = how to build better. Player memory = who you're building for.
 
 ## Conduct
 
