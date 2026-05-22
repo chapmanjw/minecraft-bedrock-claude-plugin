@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/logo.png" width="200" alt="Minecraft Bedrock MCP — Claude plugin logo">
+</p>
+
 # Minecraft Bedrock — Claude Plugin
 
 A [Claude Code](https://code.claude.com) plugin that gives Claude **agent
